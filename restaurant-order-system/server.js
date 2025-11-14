@@ -151,3 +151,27 @@ app.post('/save-invoice', (req, res) => {
 app.listen(port, () => {
   console.log(`Server đang chạy tại http://localhost:${port}`);
 });
+
+
+fetch('/login', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({ username: 'user', password: '12345' })
+})
+.then(response => {
+  if (response.ok) {
+    window.location.href = '/order';  // Chuyển hướng sau khi đăng nhập thành công
+  } else {
+    alert('Tên đăng nhập hoặc mật khẩu không đúng');
+  }
+});
+
+
+res.cookie('loggedIn', true, {
+  maxAge: 3600000,
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',  // Chỉ set secure cookie khi ở môi trường sản xuất
+  sameSite: 'strict'  // Đảm bảo cookie chỉ được gửi từ cùng một miền
+});
