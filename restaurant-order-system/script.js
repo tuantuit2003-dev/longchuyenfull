@@ -1,8 +1,4 @@
-if (!localStorage.getItem('isLoggedIn')) {
-    window.location.href = 'login.html';  // Đổi đường dẫn này nếu cần
-  }
-
-
+// ...existing code...
 const MENU = {
   bia: [
     { name: "Bia Tiger", price: 18000 },
@@ -128,94 +124,6 @@ function renderOrder() {
   totalEl.textContent = total.toLocaleString();
 }
 
-/*
-function payment() {
-  if (!currentTable) {
-    alert("Chọn bàn trước");
-    return;
-  }
-  const orderList = tableOrders[currentTable];
-  if (orderList.length === 0) {
-    alert("Không có món nào trong đơn hàng.");
-    return;
-  }
-
-  
-
-  // Tính tổng tiền
-  let total = 0;
-  orderList.forEach(item => {
-    total += item.qty * item.price;
-  });
-
-  // Tạo hóa đơn dưới dạng HTML
-  let billContent = `
-    <h2>Hóa đơn - Bàn ${currentTable}</h2>
-    <table border="1">
-      <thead>
-        <tr>
-          <th>Món</th>
-          <th>SL</th>
-          <th>Giá</th>
-          <th>Thành tiền</th>
-        </tr>
-      </thead>
-      <tbody>
-  `;
-
-  orderList.forEach(item => {
-    const line = item.qty * item.price;
-    billContent += `
-      <tr>
-        <td>${item.name}</td>
-        <td>${item.qty}</td>
-        <td>${item.price.toLocaleString()}</td>
-        <td>${line.toLocaleString()}</td>
-      </tr>
-    `;
-  });
-
-  billContent += `
-    </tbody>
-    </table>
-    <h3>Tổng cộng: ${total.toLocaleString()} đ</h3>
-  `;
-
-  // Mở cửa sổ in
-  const printWindow = window.open('', '', 'width=600,height=400');
-  printWindow.document.write(billContent);
-  printWindow.document.close(); // Đóng tài liệu
-  printWindow.print(); // Gọi lệnh in
-}
-
-//API in sheets
-
-function saveToGoogleSheets() {
-  if (!currentTable) {
-    alert("Chọn bàn trước");
-    return;
-  }
-  const orderList = tableOrders[currentTable];
-  if (orderList.length === 0) {
-    alert("Không có món nào trong đơn hàng.");
-    return;
-  }
-
-  const paymentData = [
-    ['Bàn', 'Món', 'Số lượng', 'Giá', 'Thành tiền'],
-    ...orderList.map(item => [
-      `Bàn ${currentTable}`,
-      item.name,
-      item.qty,
-      item.price.toLocaleString(),
-      (item.qty * item.price).toLocaleString()
-    ])
-  ];
-
-  // Gọi API lưu vào Google Sheets
-  saveToGoogleSheets(paymentData);
-}
-
 // DOM modal
 const modalEl       = document.getElementById('invoice-modal');
 const mTableEl      = document.getElementById('mTable');
@@ -225,12 +133,8 @@ const btnPrint      = document.getElementById('btn-print');
 const btnConfirm    = document.getElementById('btn-confirm');
 const btnCloseModal = document.getElementById('modal-close');
 
-// Mở modal và đổ dữ liệu hóa đơn
 function openInvoiceModal(bill){
-  // tiêu đề
   mTableEl.textContent = bill.table;
-
-  // nội dung
   mBodyEl.innerHTML = '';
   bill.items.forEach(item=>{
     const tr = document.createElement('tr');
@@ -242,30 +146,22 @@ function openInvoiceModal(bill){
     `;
     mBodyEl.appendChild(tr);
   });
-
-  // tổng
   mTotalEl.textContent = currency(bill.totalAmount);
-
-  // hiển thị modal
   modalEl.classList.add('show');
 }
 
-// Đóng modal
 function closeInvoiceModal(){
   modalEl.classList.remove('show');
 }
 
-// In chỉ phần modal (đã có @media print để ẩn phần khác)
 btnPrint.addEventListener('click', ()=> window.print());
 btnCloseModal.addEventListener('click', closeInvoiceModal);
-// Click nền đen để đóng
 modalEl.addEventListener('click', (e)=>{
   if(e.target === modalEl || e.target.classList.contains('modal__backdrop')){
     closeInvoiceModal();
   }
 });
 
-// Xác nhận thanh toán: xóa order bàn + cập nhật trạng thái
 btnConfirm.addEventListener('click', ()=>{
   if (!currentTable) return;
   tableOrders[currentTable] = [];
@@ -275,13 +171,9 @@ btnConfirm.addEventListener('click', ()=>{
   renderOrder();
 });
 
-// ===== cache hóa đơn đang mở modal
 let lastBill = null;
-
-// Định dạng tiền
 const currency = n => Number(n||0).toLocaleString('vi-VN');
 
-// Lưu 1 record hóa đơn chỉ gồm: id, thời gian, bàn, tổng
 function saveBill(bill) {
   const rec = {
     id: 'HD' + Date.now(),
@@ -295,29 +187,9 @@ function saveBill(bill) {
   localStorage.setItem(key, JSON.stringify(arr));
 }
 
-// (tuỳ chọn) đọc lại danh sách để debug
 function loadBills() {
   return JSON.parse(localStorage.getItem('bills') || '[]');
 }
-
-// ====== payment() – giữ nguyên tính toán, chỉ thêm lastBill
-function payment() {
-  if (!currentTable) { alert('Chọn bàn trước'); return; }
-  const orderList = tableOrders[currentTable];
-  if (!orderList?.length) { alert('Không có món nào trong đơn hàng.'); return; }
-
-  let total = 0;
-  const items = orderList.map(i => {
-    const line = i.qty * i.price;
-    total += line;
-    return { name: i.name, qty: i.qty, price: i.price, total: line };
-  });
-
-  lastBill = { table: currentTable, items, totalAmount: total }; // <-- lưu lại
-  openInvoiceModal(lastBill); // hàm modal bạn đã có
-}
-
-*/
 
 function payment() {
   if (!currentTable) {
@@ -331,13 +203,11 @@ function payment() {
     return;
   }
 
-  // Tính tổng tiền
   let total = 0;
   orderList.forEach(item => {
     total += item.qty * item.price;
   });
 
-  // Tạo hóa đơn dưới dạng HTML cho modal
   let billContent = `
     <h2>Hóa đơn - Bàn ${currentTable}</h2>
     <table border="1">
@@ -370,7 +240,6 @@ function payment() {
     <h3>Tổng cộng: ${total.toLocaleString()} đ</h3>
   `;
 
-  // Hiển thị modal với hóa đơn
   const modal = document.createElement('div');
   modal.id = 'payment-modal';
   modal.style.position = 'fixed';
@@ -395,18 +264,13 @@ function payment() {
     </div>
   `;
 
-  // Thêm modal vào body
   document.body.appendChild(modal);
 }
 
 function printBill() {
   const billContent = document.querySelector('.modal-body').innerHTML;
-
-  // Lấy ngày và giờ hiện tại
   const currentDate = new Date();
   const formattedDate = `${currentDate.toLocaleDateString()} ${currentDate.toLocaleTimeString()}`;
-
-  // Tạo nội dung in hóa đơn với tên nhà hàng, ngày giờ và căn giữa nội dung
   const billWithDate = `
     <div style="text-align: 0;">
       <h1>Nhà Hàng Long Chuyên</h1>
@@ -415,20 +279,16 @@ function printBill() {
       ${billContent}
     </div>
   `;
-
-  // Mở cửa sổ in
   const printWindow = window.open('', '', 'width=600,height=400');
   printWindow.document.write(billWithDate);
-  printWindow.document.close(); // Đóng tài liệu
-  printWindow.print(); // Gọi lệnh in
+  printWindow.document.close();
+  printWindow.print();
 }
-
 
 function markAsPaid() {
   const orderList = tableOrders[currentTable];
   const total = orderList.reduce((total, item) => total + item.qty * item.price, 0);
 
-  // Dữ liệu hóa đơn sẽ được gửi đến backend để lưu trữ
   const paymentData = {
     table: currentTable,
     items: orderList,
@@ -440,17 +300,17 @@ function markAsPaid() {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(paymentData),  // Gửi hóa đơn dưới dạng JSON
+    body: JSON.stringify(paymentData),
   })
-  .then(response => response.json())  // Nhận phản hồi từ server
+  .then(response => response.json())
   .then(data => {
-    alert(data.message);  // Thông báo thành công
-    tableOrders[currentTable] = [];  // Xóa đơn hàng sau khi thanh toán
-    document.getElementById(`status-${currentTable}`).textContent = 'Trống';  // Đánh dấu bàn đã thanh toán
-    renderOrder();  // Cập nhật lại giao diện
+    alert(data.message);
+    tableOrders[currentTable] = [];
+    document.getElementById(`status-${currentTable}`).textContent = 'Trống';
+    renderOrder();
     const modal = document.getElementById('payment-modal');
     if (modal) {
-      modal.remove();  // Đóng modal sau khi thanh toán
+      modal.remove();
     }
   })
   .catch(error => {
@@ -458,3 +318,4 @@ function markAsPaid() {
     alert('Có lỗi xảy ra khi lưu hóa đơn.');
   });
 }
+// ...existing code...

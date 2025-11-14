@@ -111,5 +111,21 @@
       }
     ],
     "total": 440000
+  },
+  {
+    "table": 4,
+    "items": [
+      {
+        "name": "Bia Tiger",
+        "price": 18000,
+        "qty": 1
+      },
+      {
+        "name": "Bia Heineken",
+        "price": 22000,
+        "qty": 1
+      }
+    ],
+    "total": 40000
   }
 ]
