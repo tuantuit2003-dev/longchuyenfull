@@ -93,8 +93,8 @@ app.get('/', (req, res) => {
 // API xử lý đăng nhập (Không đổi so với hướng dẫn trước)
 app.post('/login', (req, res) => {
   const { username, password } = req.body;
-  const validUsername = 'user';
-  const validPassword = '12345';
+  const validUsername = 'nhahanglongchuyen';
+  const validPassword = '19791980';
 
   if (username === validUsername && password === validPassword) {
     // Lưu cookie khi đăng nhập thành công
